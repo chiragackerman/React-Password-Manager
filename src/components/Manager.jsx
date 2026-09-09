@@ -1,3 +1,4 @@
+// Import libraries, icons, and animations.
 import { useRef, useState, useEffect } from 'react'
 import { Player } from '@lordicon/react'
 import ADD_ICON from '../assets/icons/add.json'
@@ -7,6 +8,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Render the copy-to-clipboard animation.
 const CopyAnimation = () => {
   const copyPlayerRef = useRef(null)
 
@@ -29,6 +31,7 @@ const CopyAnimation = () => {
   )
 }
 
+// Render animated action icons.
 const AnimatedPlayer = ({ icon, size }) => {
   const playerRef = useRef(null)
 
@@ -43,6 +46,7 @@ const AnimatedPlayer = ({ icon, size }) => {
   )
 }
 
+// Manage password form data and saved passwords.
 const Manager = () => {
   const ref = useRef()
   const passwordRef = useRef()
@@ -50,6 +54,7 @@ const Manager = () => {
   const [form, setform] = useState({ site: "", username: "", password: "" })
   const [passwordArray, setpasswordArray] = useState([])
 
+  // Load saved passwords from local storage.
   useEffect(() => {
     let passwords = localStorage.getItem("passwords")
     if (passwords) {
@@ -58,6 +63,7 @@ const Manager = () => {
   }, [])
 
 
+  // Toggle password visibility in the form.
   const showPass = () => {
     if (form.password.length > 0 && ref.current.src.includes("icons/view.png")) {
       ref.current.src = "icons/hide.png"
@@ -69,6 +75,7 @@ const Manager = () => {
     }
   }
 
+  // Validate and save a password to local storage.
   const savePassword = () => {
     if (form.site.length >= 5 && form.username.length >= 3 && form.password.length >= 4) {
       setpasswordArray([...passwordArray, form])
@@ -124,11 +131,13 @@ const Manager = () => {
     }
   }
 
+  // Update form values as the user types.
   const handleChange = (e) => {
     setform({ ...form, [e.target.name]: e.target.value })
     ref.current.src = "icons/view.png"
   }
 
+  // Copy a password value to the clipboard.
   const copyToClipboard = (text) => {
     toast('Copied to clipboard!', {
       position: "bottom-right",
@@ -143,6 +152,7 @@ const Manager = () => {
     navigator.clipboard.writeText(text)
   }
 
+  // Remove a password from state and local storage.
   const removePassword = (index) => {
     const updatedPasswords = [...passwordArray]
     updatedPasswords.splice(index, 1)
@@ -151,6 +161,7 @@ const Manager = () => {
     return updatedPasswords
   }
 
+  // Delete a password and show confirmation.
   const deletePassword = (index) => {
     removePassword(index)
     toast.success('Password deleted!', {
@@ -165,12 +176,14 @@ const Manager = () => {
     });
   }
 
+  // Load a saved password back into the form for editing.
   const editPassword = (index) => {
     const passwordToEdit = passwordArray[index]
     setform(passwordToEdit)
     removePassword(index)
   }
 
+  // Render the password manager interface.
   return (
     <div>
       <ToastContainer

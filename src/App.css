@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Stack password rows into readable cards on small screens. */
 @media (max-width: 640px) {
 	.password-table {
 		display: block;
