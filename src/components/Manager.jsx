@@ -70,20 +70,58 @@ const Manager = () => {
   }
 
   const savePassword = () => {
-    setpasswordArray([...passwordArray, form])
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]))
-    console.log([...passwordArray, form])
-    setform({ site: "", username: "", password: "" })
-    toast.success('Password Saved!', {
-      position: "bottom-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
+    if (form.site.length >= 5 && form.username.length >= 3 && form.password.length >= 4) {
+      setpasswordArray([...passwordArray, form])
+      localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]))
+      console.log([...passwordArray, form])
+      setform({ site: "", username: "", password: "" })
+      toast.success('Password Saved!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+    if (form.site.length < 5) {
+      toast.error('URL must be at least 5 characters long!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+    if (form.username.length < 3) {
+      toast.error('Username must be at least 3 characters long!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+    if (form.password.length < 4) {
+      toast.error('Password must be at least 4 characters long!', {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
   }
 
   const handleChange = (e) => {
@@ -151,12 +189,12 @@ const Manager = () => {
       <div className="heading">
         <h1 className='text-3xl tracking-wider font-bold text-center my-4'>PassMan - Your Own Password Manager</h1>
       </div>
-      <div className="inputcontainer w-[70vw] mx-auto relative flex flex-col items-center justify-center">
-        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={3} className='border-2 w-[99%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
-        <div className="flex w-[70vw] relative justify-center">
-          <input name='username' value={form.username} onChange={handleChange} type="text" minLength={3} maxLength={20} className='border-2 w-[50%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter Username" />
-          <div className="relative w-[50%]">
-            <input ref={passwordRef} name='password' value={form.password} onChange={handleChange} type="password" minLength={4} maxLength={10} className='border-2 w-[97%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter Password" />
+      <div className="inputcontainer md:w-[70vw] w-[90vw] mx-auto relative flex flex-col items-center justify-center">
+        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={3} className='border-2 w-[100%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
+        <div className="flex flex-col md:gap-2 md:flex-row md:w-[70vw] w-[90vw] relative justify-center">
+          <input name='username' value={form.username} onChange={handleChange} type="text" minLength={3} maxLength={15} className='border-2 md:w-[50%] w-full border-gray-500 p-3 my-2 text-white rounded-lg' placeholder="Enter Username" />
+          <div className="relative md:w-[50%] w-full">
+            <input ref={passwordRef} name='password' value={form.password} onChange={handleChange} type="password" minLength={4} maxLength={10} className='border-2  w-full border-gray-500 p-3 my-2 text-white rounded-lg' placeholder="Enter Password" />
             <span className='absolute right-[4%] top-1/2 transform -translate-y-1/2 cursor-pointer'>
               <img ref={ref} onClick={() => showPass()} src="icons/view.png" alt="eye" />
             </span>
@@ -172,7 +210,7 @@ const Manager = () => {
           </span>
         </button>
       </div>
-      <div className="passwords w-[70vw] mx-auto my-4">
+      <div className="passwords md:w-[70vw] w-[90vw] mx-auto my-4 pb-[60px]">
         {passwordArray.length === 0 && (
           <h2 className='text-2xl tracking-wider font-bold text-center my-4'>No Passwords Saved Yet</h2>
         )}
