@@ -190,7 +190,7 @@ const Manager = () => {
         <h1 className='text-3xl tracking-wider font-bold text-center my-4'>PassMan - Your Own Password Manager</h1>
       </div>
       <div className="inputcontainer md:w-[70vw] w-[90vw] mx-auto relative flex flex-col items-center justify-center">
-        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={3} className='border-2 w-[100%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
+        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={5} className='border-2 w-[100%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
         <div className="flex flex-col md:gap-2 md:flex-row md:w-[70vw] w-[90vw] relative justify-center">
           <input name='username' value={form.username} onChange={handleChange} type="text" minLength={3} maxLength={15} className='border-2 md:w-[50%] w-full border-gray-500 p-3 my-2 text-white rounded-lg' placeholder="Enter Username" />
           <div className="relative md:w-[50%] w-full">
@@ -219,7 +219,7 @@ const Manager = () => {
         }
         {passwordArray.length > 0 &&
           <div className="passwordlists">
-            <table className=' rounded-xl overflow-hidden border-collapse table-fixed text-lg border w-full border-gray-500'>
+            <table className='password-table rounded-xl overflow-hidden border-collapse table-fixed text-lg border w-full border-gray-500'>
               <thead>
                 <tr className='bg-black opacity-80 text-white'>
                   <th className=' p-3 w-4/9'>Site</th>
@@ -230,11 +230,11 @@ const Manager = () => {
               </thead>
               <tbody className='text-white text-center'>
                 {passwordArray.map((item, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-900 opacity-80 overflow-hidden h-12' : 'bg-black opacity-80 overflow-hidden h-12'}>
-                    <td className=' underline p-3 relative'><div className='flex justify-center items-center'><a href={item.site}>{item.site}</a><span onClick={() => copyToClipboard(item.site)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
-                    <td className=' p-3'><div className='flex justify-center items-center'> {item.username}<span onClick={() => copyToClipboard(item.username)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
-                    <td className=' p-3'><div className='flex justify-center items-center'>{item.password}<span onClick={() => copyToClipboard(item.password)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
-                    <td className=' p-3'><div className='flex justify-center items-center gap-1.5'>
+                  <tr key={index} className={`password-row ${index % 2 === 0 ? 'bg-gray-900 opacity-80 overflow-hidden h-12' : 'bg-black opacity-80 overflow-hidden h-12'}`}>
+                    <td data-label='Site' className='site-cell underline p-3 relative'><div className='flex justify-center items-center'><a href={item.site}>{item.site}</a><span onClick={() => copyToClipboard(item.site)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
+                    <td data-label='Username' className='p-3'><div className='flex justify-center items-center'> {item.username}<span onClick={() => copyToClipboard(item.username)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
+                    <td data-label='Password' className='p-3'><div className='flex justify-center items-center'>{item.password}<span onClick={() => copyToClipboard(item.password)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
+                    <td data-label='Actions' className='p-3'><div className='flex justify-center items-center gap-1.5'>
                       <span onClick={() => editPassword(index)}><AnimatedPlayer icon={EDIT_ICON} size={26} /></span>
                       <span onClick={() => deletePassword(index)}><AnimatedPlayer icon={DELETE_ICON} size={24} /></span>
                     </div>

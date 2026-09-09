@@ -1,2 +1,67 @@
 @import "tailwindcss";
 
+@media (max-width: 640px) {
+	.password-table {
+		display: block;
+		border: 0;
+		overflow: visible;
+	}
+
+	.password-table thead {
+		display: none;
+	}
+
+	.password-table tbody {
+		display: grid;
+		gap: 12px;
+	}
+
+	.password-table .password-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		height: auto;
+		border: 1px solid rgb(107 114 128);
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.password-table .password-row td {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		min-width: 0;
+		border-bottom: 1px solid rgb(55 65 81);
+	}
+
+	.password-table .password-row td:last-child {
+		border-bottom: 0;
+	}
+
+	.password-table .password-row td::before {
+		flex: 0 0 auto;
+		color: rgb(156 163 175);
+		content: attr(data-label);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.password-table .password-row td > div {
+		min-width: 0;
+		flex: 1;
+		justify-content: flex-end;
+	}
+
+	.password-table .site-cell a {
+		min-width: 0;
+		overflow-wrap: anywhere;
+		text-align: right;
+	}
+
+	.password-table .password-row td:last-child > div {
+		flex: 0 0 auto;
+	}
+}
+
