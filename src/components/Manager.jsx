@@ -54,13 +54,25 @@ const Manager = () => {
   const [form, setform] = useState({ site: "", username: "", password: "" })
   const [passwordArray, setpasswordArray] = useState([])
 
-  // Load saved passwords from local storage.
+  const getPasswords = async () => {
+    let req = await fetch("http://localhost:3000/")
+    let passwords = await req.json()
+    setpasswordArray(passwords)
+    console.log(passwords)
+  }
+
   useEffect(() => {
-    let passwords = localStorage.getItem("passwords")
-    if (passwords) {
-      setpasswordArray(JSON.parse(passwords))
-    }
+    getPasswords()
   }, [])
+  
+
+  // // Load saved passwords from local storage.
+  // useEffect(() => {
+  //   let passwords = localStorage.getItem("passwords")
+  //   if (passwords) {
+  //     setpasswordArray(JSON.parse(passwords))
+  //   }
+  // }, [])
 
 
   // Toggle password visibility in the form.
@@ -76,10 +88,19 @@ const Manager = () => {
   }
 
   // Validate and save a password to local storage.
-  const savePassword = () => {
+  const savePassword = async () => {
     if (form.site.length >= 5 && form.username.length >= 3 && form.password.length >= 4) {
-      setpasswordArray([...passwordArray, form])
-      localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]))
+      let res = await fetch("http://localhost:3000/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(form)
+      })
+
+      await getPasswords()
+      // setpasswordArray([...passwordArray, form])
+      // localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]))
       console.log([...passwordArray, form])
       setform({ site: "", username: "", password: "" })
       toast.success('Password Saved!', {
@@ -152,18 +173,27 @@ const Manager = () => {
     navigator.clipboard.writeText(text)
   }
 
-  // Remove a password from state and local storage.
-  const removePassword = (index) => {
-    const updatedPasswords = [...passwordArray]
-    updatedPasswords.splice(index, 1)
-    setpasswordArray(updatedPasswords)
-    localStorage.setItem("passwords", JSON.stringify(updatedPasswords))
-    return updatedPasswords
+  // Remove a password from the database.
+  const removePassword = async (passwordId) => {
+    const response = await fetch("http://localhost:3000/", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ _id: passwordId })
+    })
+    const result = await response.json()
+
+    if (!response.ok || result.result?.deletedCount !== 1) {
+      throw new Error('Unable to delete password')
+    }
+
+    await getPasswords()
   }
 
   // Delete a password and show confirmation.
-  const deletePassword = (index) => {
-    removePassword(index)
+  const deletePassword = async (passwordId) => {
+    await removePassword(passwordId)
     toast.success('Password deleted!', {
       position: "bottom-right",
       autoClose: 3000,
@@ -177,10 +207,10 @@ const Manager = () => {
   }
 
   // Load a saved password back into the form for editing.
-  const editPassword = (index) => {
+  const editPassword = async (index) => {
     const passwordToEdit = passwordArray[index]
     setform(passwordToEdit)
-    removePassword(index)
+    await removePassword(passwordToEdit._id)
   }
 
   // Render the password manager interface.
@@ -203,7 +233,7 @@ const Manager = () => {
         <h1 className='text-3xl tracking-wider font-bold text-center my-4'>PassMan - Your Own Password Manager</h1>
       </div>
       <div className="inputcontainer md:w-[70vw] w-[90vw] mx-auto relative flex flex-col items-center justify-center">
-        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={5} className='border-2 w-[100%] border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
+        <input name='site' value={form.site} onChange={handleChange} type="url" minLength={5} className='border-2 w-full border-gray-500 p-3 m-2 text-white rounded-lg' placeholder="Enter URL" />
         <div className="flex flex-col md:gap-2 md:flex-row md:w-[70vw] w-[90vw] relative justify-center">
           <input name='username' value={form.username} onChange={handleChange} type="text" minLength={3} maxLength={15} className='border-2 md:w-[50%] w-full border-gray-500 p-3 my-2 text-white rounded-lg' placeholder="Enter Username" />
           <div className="relative md:w-[50%] w-full">
@@ -214,7 +244,7 @@ const Manager = () => {
           </div>
         </div>
         <button
-          onClick={() => { savePassword()}}
+          onClick={async () => { await savePassword()}}
           className=' flex cursor-pointer font-bold items-center justify-center gap-2 bg-white text-black p-2 px-3 m-2 rounded-xl'
         >
           Save Password
@@ -223,7 +253,7 @@ const Manager = () => {
           </span>
         </button>
       </div>
-      <div className="passwords md:w-[70vw] w-[90vw] mx-auto my-4 pb-[60px]">
+      <div className="passwords md:w-[70vw] w-[90vw] mx-auto my-4 pb-15">
         {passwordArray.length === 0 && (
           <h2 className='text-2xl tracking-wider font-bold text-center my-4'>No Passwords Saved Yet</h2>
         )}
@@ -246,10 +276,10 @@ const Manager = () => {
                   <tr key={index} className={`password-row ${index % 2 === 0 ? 'bg-gray-900 opacity-80 overflow-hidden h-12' : 'bg-black opacity-80 overflow-hidden h-12'}`}>
                     <td data-label='Site' className='site-cell underline p-3 relative'><div className='flex justify-center items-center'><a href={item.site}>{item.site}</a><span onClick={() => copyToClipboard(item.site)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
                     <td data-label='Username' className='p-3'><div className='flex justify-center items-center'> {item.username}<span onClick={() => copyToClipboard(item.username)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
-                    <td data-label='Password' className='p-3'><div className='flex justify-center items-center'>{item.password}<span onClick={() => copyToClipboard(item.password)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
+                    <td data-label='Password' className='p-3'><div className='flex justify-center items-center'>{"*".repeat(item.password.length)}<span onClick={() => copyToClipboard(item.password)} aria-label='Copy' className='inline-block w-10 align-middle'><CopyAnimation /></span></div></td>
                     <td data-label='Actions' className='p-3'><div className='flex justify-center items-center gap-1.5'>
                       <span onClick={() => editPassword(index)}><AnimatedPlayer icon={EDIT_ICON} size={26} /></span>
-                      <span onClick={() => deletePassword(index)}><AnimatedPlayer icon={DELETE_ICON} size={24} /></span>
+                      <span onClick={() => deletePassword(item._id)}><AnimatedPlayer icon={DELETE_ICON} size={24} /></span>
                     </div>
                     </td>
                   </tr>
