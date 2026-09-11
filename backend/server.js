@@ -1,6 +1,6 @@
 const express = require('express');
 require('dotenv').config()
-console.log(process.env.MONGO_URI);
+console.log("Connecting to MongoDB...");
 const { MongoClient, ObjectId } = require('mongodb');
 const bodyParser = require('body-parser');
 const cors = require('cors');

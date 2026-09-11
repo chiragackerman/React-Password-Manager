@@ -55,7 +55,7 @@ const Manager = () => {
   const [passwordArray, setpasswordArray] = useState([])
 
   const getPasswords = async () => {
-    let req = await fetch("http://localhost:3000/")
+    let req = await fetch(`${import.meta.env.VITE_API_URL}/`)
     let passwords = await req.json()
     setpasswordArray(passwords)
     console.log(passwords)
@@ -90,7 +90,7 @@ const Manager = () => {
   // Validate and save a password to local storage.
   const savePassword = async () => {
     if (form.site.length >= 5 && form.username.length >= 3 && form.password.length >= 4) {
-      let res = await fetch("http://localhost:3000/", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -98,10 +98,15 @@ const Manager = () => {
         body: JSON.stringify(form)
       })
 
-      await getPasswords()
-      // setpasswordArray([...passwordArray, form])
-      // localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]))
-      console.log([...passwordArray, form])
+      const result = await response.json()
+      if (!response.ok || !result.result?.insertedId) {
+        throw new Error('Unable to save password')
+      }
+
+      setpasswordArray((currentPasswords) => [
+        ...currentPasswords,
+        { ...form, _id: result.result.insertedId }
+      ])
       setform({ site: "", username: "", password: "" })
       toast.success('Password Saved!', {
         position: "bottom-right",
@@ -175,7 +180,7 @@ const Manager = () => {
 
   // Remove a password from the database.
   const removePassword = async (passwordId) => {
-    const response = await fetch("http://localhost:3000/", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -188,7 +193,9 @@ const Manager = () => {
       throw new Error('Unable to delete password')
     }
 
-    await getPasswords()
+    setpasswordArray((currentPasswords) =>
+      currentPasswords.filter((password) => password._id !== passwordId)
+    )
   }
 
   // Delete a password and show confirmation.
